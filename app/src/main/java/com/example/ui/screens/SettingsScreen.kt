@@ -1,49 +1,25 @@
 package com.example.ui.screens
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,70 +38,300 @@ fun SettingsScreen(
     val activeAccent by viewModel.accentColor.collectAsState()
     val themeAccent = Color(activeAccent.hex)
 
+    val fontSize by viewModel.terminalFontSize.collectAsState()
+    val termOpacity by viewModel.terminalOpacity.collectAsState()
+    val isMatrix by viewModel.isMatrixBackground.collectAsState()
+    val isParticle by viewModel.isParticleBackground.collectAsState()
+    val cursorStyleState by viewModel.cursorStyle.collectAsState()
+    val fontName by viewModel.terminalFontFamily.collectAsState()
+
     val scrollState = rememberScrollState()
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(horizontal = 20.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+            .padding(start = 14.dp, top = 14.dp, end = 14.dp, bottom = 80.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Settings greeting header
         AnimatedEntrance(delayMillis = 100) {
-            Column {
-                Text(
-                    text = "Preferences",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Personalize your experience through real-time dynamic styling toggles.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .glassmorphic(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f), cornerRadius = 14.dp)
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        "Workspace Preferences",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        "Personalize IDE skins, opacity, and background flows",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(themeAccent.copy(alpha = 0.15f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Settings, "Settings Core", tint = themeAccent, modifier = Modifier.size(18.dp))
+                }
             }
         }
 
-        // Theme selection card
+        // Section 1: Terminal Font & Sizing Parameters
         AnimatedEntrance(delayMillis = 150) {
             Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                ),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)),
                 modifier = Modifier
                     .fillMaxWidth()
                     .glassmorphic(MaterialTheme.colorScheme.surface, borderColor = themeAccent.copy(alpha = 0.1f))
-                    .testTag("theme_settings_card")
             ) {
-                Column(modifier = Modifier.padding(18.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .background(themeAccent.copy(alpha = 0.15f), RoundedCornerShape(10.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.DarkMode, null, tint = themeAccent, modifier = Modifier.size(18.dp))
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Aesthetic Theme Mode",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        Icon(Icons.Default.TextFields, "Typography selectors", tint = themeAccent, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text("Terminal Typography & Bounds", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
-                    // Modern custom segmented toggle capsules
+                    // Font Size stepper Row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text("Standard Font Size", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                            Text("Current: ${fontSize}sp console size", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            IconButton(
+                                onClick = { if (fontSize > 10) viewModel.terminalFontSize.value = fontSize - 1 },
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(6.dp))
+                                    .testTag("btn_zoom_out")
+                            ) {
+                                Icon(Icons.Default.Remove, "zoom out", tint = themeAccent, modifier = Modifier.size(16.dp))
+                            }
+
+                            Text(fontSize.toString(), fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold)
+
+                            IconButton(
+                                onClick = { if (fontSize < 24) viewModel.terminalFontSize.value = fontSize + 1 },
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(6.dp))
+                                    .testTag("btn_zoom_in")
+                            ) {
+                                Icon(Icons.Default.Add, "zoom in", tint = themeAccent, modifier = Modifier.size(16.dp))
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Font Family switcher
+                    Text("Select Monospace Font Picker", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = themeAccent)
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f), RoundedCornerShape(10.dp))
+                            .padding(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        listOf("JetBrains Mono", "Fira Code", "Monospace").forEach { f ->
+                            val isSelected = fontName == f
+                            val btnBg = if (isSelected) themeAccent else Color.Transparent
+                            val btnTextColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(btnBg)
+                                    .clickable { viewModel.terminalFontFamily.value = f }
+                                    .padding(vertical = 8.dp)
+                                    .testTag("font_family_$f"),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(f, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = btnTextColor)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Section 2: Terminal Background Glow & Animation Canvas controls
+        AnimatedEntrance(delayMillis = 200) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .glassmorphic(MaterialTheme.colorScheme.surface, borderColor = themeAccent.copy(alpha = 0.1f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Brush, "Background overlays customization", tint = themeAccent, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text("Interactive Skins & Overlays", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Opacity Slider
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Console Grid Transparency", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                            Text("${(termOpacity * 100).toInt()}% opacity", style = MaterialTheme.typography.labelSmall, color = themeAccent)
+                        }
+
+                        Slider(
+                            value = termOpacity,
+                            onValueChange = { viewModel.terminalOpacity.value = it },
+                            valueRange = 0.3f..1.0f,
+                            colors = SliderDefaults.colors(
+                                thumbColor = themeAccent,
+                                activeTrackColor = themeAccent,
+                                inactiveTrackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                            ),
+                            modifier = Modifier.fillMaxWidth().testTag("terminal_opacity_slider")
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Matrix Flow Background Toggle
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text("Aesthetic Matrix Rain Overlay", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                            Text("Render procedurally falling falling green codes", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                        Switch(
+                            checked = isMatrix,
+                            onCheckedChange = {
+                                viewModel.isMatrixBackground.value = it
+                                if (it) viewModel.isParticleBackground.value = false
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = themeAccent,
+                                checkedTrackColor = themeAccent.copy(alpha = 0.4f)
+                            ),
+                            modifier = Modifier.testTag("switch_matrix_rain")
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Falling Particles Background Toggle
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text("Glowing Cosmic Particles Overlay", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                            Text("Proc background with flowing vector stars", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                        Switch(
+                            checked = isParticle,
+                            onCheckedChange = {
+                                viewModel.isParticleBackground.value = it
+                                if (it) viewModel.isMatrixBackground.value = false
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = themeAccent,
+                                checkedTrackColor = themeAccent.copy(alpha = 0.4f)
+                            ),
+                            modifier = Modifier.testTag("switch_particle_rain")
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Cursor blink toggler Row
+                    Text("Terminal Cursor Style Indicator", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = themeAccent)
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f), RoundedCornerShape(10.dp))
+                            .padding(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        listOf("BLOCK GLO", "UNDERLINE", "RETRO LINE").forEach { cursor ->
+                            val isSelected = cursorStyleState == cursor
+                            val cellBg = if (isSelected) themeAccent else Color.Transparent
+                            val cellTextColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(cellBg)
+                                    .clickable { viewModel.cursorStyle.value = cursor }
+                                    .padding(vertical = 8.dp)
+                                    .testTag("cursor_style_$cursor"),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(cursor, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = cellTextColor)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Section 3: App Themes & Colors config
+        AnimatedEntrance(delayMillis = 250) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .glassmorphic(MaterialTheme.colorScheme.surface, borderColor = themeAccent.copy(alpha = 0.1f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.DarkMode, null, tint = themeAccent, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text("Theme Mode & Branding Accents", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Capsules
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f), RoundedCornerShape(10.dp))
                             .padding(4.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
@@ -137,67 +343,24 @@ fun SettingsScreen(
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .clip(RoundedCornerShape(10.dp))
+                                    .clip(RoundedCornerShape(8.dp))
                                     .background(bgCol)
                                     .clickable { viewModel.setThemeMode(mode) }
                                     .padding(vertical = 10.dp)
-                                    .testTag("theme_toggle_${mode.name}"),
+                                    .testTag("settings_theme_${mode.name}"),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = mode.name,
-                                    style = MaterialTheme.typography.labelLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                    color = txtCol
-                                )
+                                Text(mode.name, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = txtCol)
                             }
                         }
                     }
-                }
-            }
-        }
 
-        // Color theme accent picker card
-        AnimatedEntrance(delayMillis = 200) {
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .glassmorphic(MaterialTheme.colorScheme.surface, borderColor = themeAccent.copy(alpha = 0.1f))
-                    .testTag("accent_settings_card")
-            ) {
-                Column(modifier = Modifier.padding(18.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .background(themeAccent.copy(alpha = 0.15f), RoundedCornerShape(10.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.ColorLens, null, tint = themeAccent, modifier = Modifier.size(18.dp))
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "App Accent Branding",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(14.dp))
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = "Instantly change the primary branding accent color throughout all visual interfaces.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        lineHeight = 16.sp
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
+                    // Accents spheres row
+                    Text("Select Primary Accent Brand Color", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = themeAccent)
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                    // Row of Colored Spheres
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -205,93 +368,20 @@ fun SettingsScreen(
                     ) {
                         AppAccentColor.entries.forEach { accent ->
                             val isSelected = accent == activeAccent
-                            val colorValue = Color(accent.hex)
+                            val colValue = Color(accent.hex)
 
-                            val borderDp by animateDpAsState(
-                                targetValue = if (isSelected) 4.dp else 0.dp,
-                                animationSpec = tween(250),
-                                label = "border_width"
-                            )
-
-                            val outlineColor by animateColorAsState(
-                                targetValue = if (isSelected) colorValue.copy(alpha = 0.4f) else Color.Transparent,
-                                animationSpec = tween(250),
-                                label = "border_color"
-                            )
-
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
+                            Box(
                                 modifier = Modifier
+                                    .size(34.dp)
                                     .clip(CircleShape)
-                                    .clickable(
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        indication = null
-                                    ) {
-                                        viewModel.setAccentColor(accent)
-                                    }
-                                    .padding(4.dp)
-                                    .testTag("accent_picker_${accent.name}")
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(46.dp)
-                                        .background(outlineColor, CircleShape)
-                                        .padding(borderDp)
-                                        .background(Color.White, CircleShape)
-                                        .clip(CircleShape)
-                                        .background(colorValue)
-                                )
-                                Spacer(modifier = Modifier.height(6.dp))
-                                Text(
-                                    text = accent.nameLabel.substringAfter(" "),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 11.sp,
-                                    fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
-                                    color = if (isSelected) themeAccent else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Live color schema interactive card preview
-        AnimatedEntrance(delayMillis = 250) {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = themeAccent),
-                shape = RoundedCornerShape(20.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("accent_preview_card"),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(
-                        text = "Branding Applied",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White.copy(alpha = 0.8f)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Samantha Sterling",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Black,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
-                                .padding(horizontal = 10.dp, vertical = 6.dp)
-                        ) {
-                            Text(
-                                "Live Engine Active",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                    .background(if (isSelected) colValue.copy(alpha = 0.3f) else Color.Transparent)
+                                    .padding(if (isSelected) 4.dp else 0.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White)
+                                    .clip(CircleShape)
+                                    .background(colValue)
+                                    .clickable { viewModel.setAccentColor(accent) }
+                                    .testTag("accent_color_picker_${accent.name}")
                             )
                         }
                     }
@@ -299,56 +389,44 @@ fun SettingsScreen(
             }
         }
 
-        // App details card
+        // Section 4: Host System Specs
         AnimatedEntrance(delayMillis = 300) {
             Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                ),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)),
                 modifier = Modifier
                     .fillMaxWidth()
                     .glassmorphic(MaterialTheme.colorScheme.surface, borderColor = themeAccent.copy(alpha = 0.08f))
-                    .testTag("app_info_settings_card")
             ) {
-                Column(modifier = Modifier.padding(18.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
+                        Icon(Icons.Default.Info, null, tint = themeAccent, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text("Specification Details", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    val infoList = listOf(
+                        Pair("Application Name", "NeoTerm Cloud Terminal IDE"),
+                        Pair("Integration Kernel", "Antigravity VM Sandbox Engine"),
+                        Pair("Design Specification", "Material Design 3 Glassmorph Icons"),
+                        Pair("Compiler Core Status", "ARM64 Pre-compiled Binaries Verified")
+                    )
+
+                    infoList.forEach { info ->
+                        Row(
                             modifier = Modifier
-                                .size(36.dp)
-                                .background(themeAccent.copy(alpha = 0.13f), RoundedCornerShape(10.dp)),
-                            contentAlignment = Alignment.Center
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.Info, null, tint = themeAccent, modifier = Modifier.size(18.dp))
+                            Text(info.first, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(info.second, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                         }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Specifications",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text("App Name", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
-                        Text("Bio Portfolio", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text("Version", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
-                        Text("1.0.0 (Native Canary)", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text("Design Paradigm", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
-                        Text("Material You M3", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
                     }
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(64.dp))
     }
 }

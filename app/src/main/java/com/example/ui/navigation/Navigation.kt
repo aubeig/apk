@@ -79,11 +79,11 @@ fun AppNavigation(
 
     val navBarItems = remember {
         listOf(
-            NavItem("home", "Home", Icons.Default.Home, Icons.Default.Home, "nav_home"),
-            NavItem("about", "About", Icons.Default.Person, Icons.Default.PersonOutline, "nav_about"),
-            NavItem("projects", "Projects", Icons.Default.BusinessCenter, Icons.Default.BusinessCenter, "nav_projects"),
-            NavItem("contact", "Contact", Icons.Default.Email, Icons.Default.Email, "nav_contact"),
-            NavItem("settings", "Settings", Icons.Default.Settings, Icons.Default.Settings, "nav_settings")
+            NavItem("home", "Terminal", Icons.Default.Home, Icons.Default.Home, "nav_home"),
+            NavItem("about", "Explorer", Icons.Default.Folder, Icons.Default.Folder, "nav_about"),
+            NavItem("projects", "Packages", Icons.Default.FolderOpen, Icons.Default.FolderOpen, "nav_projects"),
+            NavItem("contact", "Port Map", Icons.Default.ChatBubble, Icons.Default.ChatBubble, "nav_contact"),
+            NavItem("settings", "Skins", Icons.Default.Settings, Icons.Default.Settings, "nav_settings")
         )
     }
 

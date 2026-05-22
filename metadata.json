@@ -1,6 +1,6 @@
 {
-  "name": "Bio Portfolio",
-  "description": "A premium personal bio and professional portfolio app with aesthetic design, animations, dark mode, filtering and social links.",
+  "name": "NeoTerm IDE",
+  "description": "A premium, heavily upgraded Termux Terminal emulator and Cloud developer IDE featuring interactive multi-tab custom shell commands, pip wheel packaging compilers, SSH gateways, coding text editors, and custom matrix flow settings.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
