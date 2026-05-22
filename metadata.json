@@ -1,0 +1,6 @@
+{
+  "name": "Bio Portfolio",
+  "description": "A premium personal bio and professional portfolio app with aesthetic design, animations, dark mode, filtering and social links.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
